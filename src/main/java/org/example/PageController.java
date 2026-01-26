@@ -1,9 +1,11 @@
 package org.example;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@Hidden
 public class PageController {
 
     // Serve the main index page
