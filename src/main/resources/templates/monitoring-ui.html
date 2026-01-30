@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Monitoring Dashboard</h1>
+        <p>System metrics and monitoring data visualization.</p>
+
+        <div class="endpoint-section">
+            <h2>Metrics History Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Get Metric History
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="monitor-id">Monitor ID:</label>
+                        <input type="text" id="monitor-id" placeholder="Monitor ID" value="123">
+                    </div>
+                    <div class="form-group">
+                        <label for="metric-full">Metric Name:</label>
+                        <input type="text" id="metric-full" placeholder="app.metrics.metric" value="linux.cpu.usage">
+                    </div>
+                    <div class="form-group">
+                        <label for="history">Time Range:</label>
+                        <input type="text" id="history" placeholder="Time range" value="6h">
+                    </div>
+                    <div class="form-group">
+                        <label for="instance">Instance:</label>
+                        <input type="text" id="instance" placeholder="Instance filter" value="server1">
+                    </div>
+                    <button class="btn" onclick="testMetricsEndpoint('/api/monitoring/metrics/history', false, 'metrics-result')">
+                        Query Metrics
+                    </button>
+                    <div id="metrics-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Metric History
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="monitor-id-secure">Monitor ID:</label>
+                        <input type="text" id="monitor-id-secure" placeholder="Monitor ID" value="123">
+                    </div>
+                    <div class="form-group">
+                        <label for="metric-full-secure">Metric Name:</label>
+                        <input type="text" id="metric-full-secure" placeholder="app.metrics.metric" value="linux.cpu.usage">
+                    </div>
+                    <div class="form-group">
+                        <label for="history-secure">Time Range:</label>
+                        <input type="text" id="history-secure" placeholder="Time range" value="6h">
+                    </div>
+                    <div class="form-group">
+                        <label for="instance-secure">Instance:</label>
+                        <input type="text" id="instance-secure" placeholder="Instance filter" value="server1">
+                    </div>
+                    <button class="btn btn-success" onclick="testMetricsEndpoint('/api/monitoring/metrics/secureHistory', true, 'metrics-result-secure')">
+                        Query Secure Metrics
+                    </button>
+                    <div id="metrics-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>Test Payloads</h2>
+            <div class="test-payloads">
+                <div style="margin-bottom: 15px;">
+                    <strong>SQL Injection (Bypass Filter):</strong>
+                    <code>server1' OR '1'='1</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillInstancePayload(&quot;server1' OR '1'='1&quot;)">
+                        Fill Instance Fields
+                    </button>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="clearAllFields()">
+                        Clear All Fields
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+    </div>
+
+    <script src="/js/monitoring-ui.js"></script>
+</body>
+</html>

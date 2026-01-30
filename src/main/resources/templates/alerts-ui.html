@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Definitions</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Alert Definitions</h1>
+        <p>Manage monitoring alert configurations stored as YAML files.</p>
+
+        <div class="endpoint-section">
+            <h2>Get Alert Definition Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Get Alert Definition
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="alert-filename">Filename:</label>
+                        <input type="text" id="alert-filename" placeholder="Enter filename..." value="alert-cpu-high.yml">
+                    </div>
+                    <button class="btn" onclick="getAlert('/api/alerts/content', 'alert-filename', 'get-result')">
+                        Get Alert
+                    </button>
+                    <div id="get-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Get Alert Definition
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="alert-name-secure">Alert Name:</label>
+                        <input type="text" id="alert-name-secure" placeholder="Enter alert name..." value="cpu-high">
+                    </div>
+                    <button class="btn btn-success" onclick="getAlertSecure('/api/alerts/secureContent', 'alert-name-secure', 'get-result-secure')">
+                        Get Alert Secure
+                    </button>
+                    <div id="get-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>Save Alert Definition Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Save Alert Definition
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="save-filename">Filename:</label>
+                        <input type="text" id="save-filename" placeholder="Enter filename..." value="alert-custom.yml">
+                    </div>
+                    <div class="form-group">
+                        <label for="save-content">Alert Definition:</label>
+                        <textarea id="save-content" rows="4" placeholder="Enter alert definition...">name: Custom Alert
+type: threshold
+metric: system.load.1
+condition: "> 5"
+severity: warning</textarea>
+                    </div>
+                    <button class="btn" onclick="saveAlert('/api/alerts/save', 'save-filename', 'save-content', 'save-result')">
+                        Save Alert
+                    </button>
+                    <div id="save-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Save Alert Definition
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="save-name-secure">Alert Name:</label>
+                        <input type="text" id="save-name-secure" placeholder="Enter alert name..." value="custom-alert">
+                    </div>
+                    <div class="form-group">
+                        <label for="save-content-secure">Alert Definition:</label>
+                        <textarea id="save-content-secure" rows="4" placeholder="Enter alert definition...">name: Custom Alert
+type: threshold
+metric: system.load.1
+condition: "> 5"
+severity: warning</textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="saveAlertSecure('/api/alerts/secureSave', 'save-name-secure', 'save-content-secure', 'save-result-secure')">
+                        Save Alert Secure
+                    </button>
+                    <div id="save-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>Test Payloads</h2>
+            <div class="test-payloads">
+                <div style="margin-bottom: 10px;">
+                    <strong>Path Traversal (Read):</strong><br>
+                    <code>../../../etc/passwd</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillReadPayload('../../../etc/passwd')">
+                        Fill Get Fields
+                    </button>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Path Traversal (Write):</strong><br>
+                    <code>../traversal-test.txt</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillWritePayload('../traversal-test.txt', 'PATH TRAVERSAL TEST')">
+                        Fill Save Fields
+                    </button>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="clearAllFields()">
+                        Clear All Fields
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+    </div>
+
+    <script src="/js/alerts-ui.js"></script>
+</body>
+</html>

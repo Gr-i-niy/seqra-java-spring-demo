@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Services</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Integration Services</h1>
+        <p>Third-party integration and widget validation services.</p>
+
+        <div class="endpoint-section">
+            <h2>Widget Validation Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Validate Widget Source
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="widget-script">Script Code:</label>
+                        <textarea id="widget-script" rows="3" placeholder="Enter script tag..."><script src="http://localhost:8081/api/integration/health"></script></textarea>
+                    </div>
+                    <button class="btn" onclick="testWidgetEndpoint('/api/integration/widgets/validate', 'widget-script', 'widget-result')">
+                        Validate Widget
+                    </button>
+                    <div id="widget-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Widget Validation
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="widget-script-secure">Script Code:</label>
+                        <textarea id="widget-script-secure" rows="3" placeholder="Enter script tag..."><script src="http://localhost:8081/api/integration/health"></script></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="testWidgetEndpoint('/api/integration/widgets/secureValidate', 'widget-script-secure', 'widget-result-secure')">
+                        Validate Secure Widget
+                    </button>
+                    <div id="widget-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>Service Connection Test Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Test Service Connection
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="service-url">Service URL:</label>
+                        <input type="text" id="service-url" placeholder="Enter service URL..." value="http://localhost:8081/api/integration/health">
+                    </div>
+                    <button class="btn" onclick="testServiceEndpoint('/api/integration/services/test', 'service-url', 'service-result')">
+                        Test Connection
+                    </button>
+                    <div id="service-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Service Connection
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="service-url-secure">Service URL:</label>
+                        <input type="text" id="service-url-secure" placeholder="Enter service URL..." value="http://localhost:8081/api/integration/health">
+                    </div>
+                    <button class="btn btn-success" onclick="testServiceEndpoint('/api/integration/services/secureTest', 'service-url-secure', 'service-result-secure')">
+                        Test Secure Connection
+                    </button>
+                    <div id="service-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>Test Payloads</h2>
+            <div class="test-payloads">
+                <div style="margin-bottom: 10px;">
+                    <strong>Valid Widget (Local):</strong><br>
+                    <code>&lt;script src="http://localhost:8081/api/integration/health"&gt;&lt;/script&gt;</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillWidgetPayload('<script src=&quot;http://localhost:8081/api/integration/health&quot;></script>')">
+                        Fill Widget Fields
+                    </button>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>SSRF Attack (Internal Service):</strong><br>
+                    <code>&lt;script src="http://127.0.0.1:8081/api/monitoring/monitors/list"&gt;&lt;/script&gt;</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillWidgetPayload('<script src=&quot;http://127.0.0.1:8081/api/monitoring/monitors/list&quot;></script>')">
+                        Fill Widget Fields
+                    </button>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="clearAllFields()">
+                        Clear All Fields
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+    </div>
+
+    <script src="/js/integration-ui.js"></script>
+</body>
+</html>

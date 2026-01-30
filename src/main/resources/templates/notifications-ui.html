@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Services</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Notification Services</h1>
+        <p>Webhook processing and notification management.</p>
+
+        <div class="endpoint-section">
+            <h2>Webhook Processing Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Process Webhook
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="webhook-xml">XML Content:</label>
+                        <textarea id="webhook-xml" rows="8" placeholder="Enter XML content..."><?xml version="1.0" encoding="UTF-8"?>
+<xml>
+  <ToUserName>user123</ToUserName>
+  <FromUserName>sender456</FromUserName>
+  <MsgType>event</MsgType>
+  <Event>subscribe</Event>
+</xml></textarea>
+                    </div>
+                    <button class="btn" onclick="testWebhookEndpoint('/api/notifications/webhook/process', 'webhook-xml', 'webhook-result')">
+                        Process Webhook
+                    </button>
+                    <div id="webhook-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Webhook Processing
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="webhook-xml-secure">XML Content:</label>
+                        <textarea id="webhook-xml-secure" rows="8" placeholder="Enter XML content..."><?xml version="1.0" encoding="UTF-8"?>
+<xml>
+  <ToUserName>user123</ToUserName>
+  <FromUserName>sender456</FromUserName>
+  <MsgType>event</MsgType>
+  <Event>subscribe</Event>
+</xml></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="testWebhookEndpoint('/api/notifications/webhook/secureProcess', 'webhook-xml-secure', 'webhook-result-secure')">
+                        Process Secure Webhook
+                    </button>
+                    <div id="webhook-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>Test Payloads</h2>
+            <div class="test-payloads">
+                <div style="margin-bottom: 15px;">
+                    <strong>Valid Webhook:</strong>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillXMLPayload(normalXML)">
+                        Fill All Fields
+                    </button>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>XXE Attack (File Disclosure):</strong>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillXMLPayload(xxeFilePayload)">
+                        Fill All Fields
+                    </button>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="clearAllFields()">
+                        Clear All Fields
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+    </div>
+
+    <script src="/js/notifications-ui.js"></script>
+</body>
+</html>

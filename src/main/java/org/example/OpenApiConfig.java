@@ -12,7 +12,8 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("User Profile API")
-                        .version("1.0"));
+                        .title("Enterprise Application API")
+                        .version("1.0")
+                        .description("API for user profiles, integrations, notifications, and monitoring services"));
     }
 }
