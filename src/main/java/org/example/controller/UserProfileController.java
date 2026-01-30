@@ -1,7 +1,11 @@
-package org.example;
+package org.example.controller;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.example.model.DefaultFormatter;
+import org.example.model.EscapeFormatter;
+import org.example.model.HtmlPageBuilder;
+import org.example.model.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

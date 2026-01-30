@@ -1,0 +1,3131 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Monitoring Platform API",
+    "description": "API for system monitoring, alerts, notifications, and reporting",
+    "contact": {
+      "name": "API Support",
+      "email": "support@example.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8081",
+      "description": "Development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Integration",
+      "description": "Third-party integrations and widgets"
+    },
+    {
+      "name": "Notifications",
+      "description": "Webhook and notification management"
+    },
+    {
+      "name": "System",
+      "description": "System information and utilities"
+    },
+    {
+      "name": "Monitoring",
+      "description": "System metrics and monitoring"
+    },
+    {
+      "name": "Configuration",
+      "description": "Application configuration management"
+    },
+    {
+      "name": "Reports",
+      "description": "Report generation and network diagnostics"
+    },
+    {
+      "name": "Audit",
+      "description": "Audit logging and history"
+    },
+    {
+      "name": "Dashboard",
+      "description": "Dashboard data and widgets"
+    },
+    {
+      "name": "Users",
+      "description": "User management"
+    },
+    {
+      "name": "Alerts",
+      "description": "Alert definition management"
+    },
+    {
+      "name": "Calculator",
+      "description": "Metric calculation utilities"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user or list users",
+        "description": "Returns user by ID if id is provided, otherwise returns all users",
+        "operationId": "get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "User ID (optional - returns specific user if provided, otherwise lists all users)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user",
+        "description": "Updates an existing user",
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "User ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create user",
+        "description": "Creates a new user",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete user",
+        "description": "Deletes a user",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "User ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/settings": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Get notification settings",
+        "description": "Get user notification preferences",
+        "operationId": "getSettings",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "User ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "user123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Update notification settings",
+        "description": "Update user notification preferences",
+        "operationId": "updateSettings",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "User ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "user123"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/layout": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get layout",
+        "description": "Returns dashboard layout configuration",
+        "operationId": "getLayout",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Update layout",
+        "description": "Updates dashboard layout",
+        "operationId": "updateLayout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Get setting",
+        "description": "Returns a specific configuration value",
+        "operationId": "get_1",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "Setting key",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Update setting",
+        "description": "Updates a configuration value",
+        "operationId": "update_1",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "Setting key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/webhook/secureProcess": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Process webhook (secure)",
+        "description": "Process XML webhook with XXE protection",
+        "operationId": "secureProcessWebhook",
+        "requestBody": {
+          "content": {
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/webhook/process": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Process webhook",
+        "description": "Process incoming XML webhook notification",
+        "operationId": "processWebhook",
+        "requestBody": {
+          "content": {
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/test": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Send test notification",
+        "description": "Send a test notification",
+        "operationId": "sendTest",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "User ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "user123"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Channel",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integration/widgets/validate": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Validate widget source",
+        "description": "Validate third-party widget script URL",
+        "operationId": "validateWidgetSource",
+        "parameters": [
+          {
+            "name": "scriptCode",
+            "in": "query",
+            "description": "Script tag HTML",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "<script src=\"https://cdn.example.com/widget.js\"></script>"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integration/widgets/secureValidate": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Validate widget source (secure)",
+        "description": "Validate widget with domain whitelist",
+        "operationId": "secureValidateWidgetSource",
+        "parameters": [
+          {
+            "name": "scriptCode",
+            "in": "query",
+            "description": "Script tag HTML",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "<script src=\"https://cdn.example.com/widget.js\"></script>"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/reset": {
+      "post": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Reset settings",
+        "description": "Resets all settings to defaults",
+        "operationId": "reset",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/export": {
+      "post": {
+        "tags": [
+          "Audit"
+        ],
+        "summary": "Export audit logs",
+        "description": "Exports audit logs in specified format",
+        "operationId": "exportLogs",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Export format",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Start date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "End date",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alerts/secureSave": {
+      "post": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Save alert definition (secure)",
+        "description": "Save alert with path validation",
+        "operationId": "saveAlertSecure",
+        "parameters": [
+          {
+            "name": "alertName",
+            "in": "query",
+            "description": "Alert name",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "custom-alert"
+            }
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "description": "Alert content",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name: Custom Alert\ntype: threshold"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alerts/save": {
+      "post": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Save alert definition",
+        "description": "Create or update alert definition file",
+        "operationId": "saveAlert",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "query",
+            "description": "Alert filename",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "alert-custom.yml"
+            }
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "description": "Alert content",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name: Custom Alert\ntype: threshold"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/status": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "displayUserStatus",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Active"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/secureStatus": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "displaySecureUserStatus",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Active"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/secureDisplay": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "displaySecureUserProfile",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/display": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "displayUserProfile",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/template": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "generateTemplate",
+        "parameters": [
+          {
+            "name": "content",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "New Message"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/secureTemplate": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "generateSecureTemplate",
+        "parameters": [
+          {
+            "name": "content",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "New Message"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/secureGenerate": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "generateSecureNotification",
+        "parameters": [
+          {
+            "name": "content",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "New Message"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/generate": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "generateNotification",
+        "parameters": [
+          {
+            "name": "content",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "New Message"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/secureDisplay": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "displaySecureMessage",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/format": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "formatMessage",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/escape": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "escapeMessage",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/display": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "displayMessage",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/secureGreeting": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "generateSecureDashboard",
+        "parameters": [
+          {
+            "name": "greeting",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/greeting": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "operationId": "generateDashboard",
+        "parameters": [
+          {
+            "name": "greeting",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Welcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/roles": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "List roles",
+        "description": "Returns available user roles",
+        "operationId": "listRoles",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/permissions": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get permissions",
+        "description": "Returns current user permissions",
+        "operationId": "permissions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/current": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get current user",
+        "description": "Returns current authenticated user",
+        "operationId": "current",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/version": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Get version",
+        "description": "Returns application version",
+        "operationId": "version",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/uuid": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Generate UUID",
+        "description": "Generates a random UUID",
+        "operationId": "generateUuid",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/uuid/batch": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Generate UUIDs",
+        "description": "Generates multiple UUIDs",
+        "operationId": "generateUuids",
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of UUIDs",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/timezones": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "List timezones",
+        "description": "Returns available timezone IDs",
+        "operationId": "listTimezones",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/time": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Get server time",
+        "description": "Returns current server timestamp",
+        "operationId": "getTime",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/time/formatted": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Get formatted time",
+        "description": "Returns time in specified format",
+        "operationId": "getFormattedTime",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Date format pattern",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "yyyy-MM-dd HH:mm:ss"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/info": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Get system info",
+        "description": "Returns basic system information",
+        "operationId": "getInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health check",
+        "description": "Returns service health status",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/env": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Get environment",
+        "description": "Returns application environment",
+        "operationId": "getEnvironment",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/types": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "List report types",
+        "description": "Get available report types",
+        "operationId": "listReportTypes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/secure-network-check": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Network check (secure)",
+        "description": "Run ping safely without shell",
+        "operationId": "secureNetworkCheck",
+        "parameters": [
+          {
+            "name": "hostname",
+            "in": "query",
+            "description": "Hostname to check",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "localhost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/network-check": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Network connectivity check",
+        "description": "Run ping to check host connectivity",
+        "operationId": "networkCheck",
+        "parameters": [
+          {
+            "name": "hostname",
+            "in": "query",
+            "description": "Hostname to check",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "localhost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/history": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Get notification history",
+        "description": "Get recent notifications for user",
+        "operationId": "getHistory",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "User ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "user123"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/channels": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "List notification channels",
+        "description": "Get available notification channels",
+        "operationId": "listChannels",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring/monitors": {
+      "get": {
+        "tags": [
+          "Monitoring"
+        ],
+        "summary": "Get monitor details",
+        "description": "Get details for a specific monitor",
+        "operationId": "getMonitorDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Monitor ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring/monitors/verify": {
+      "get": {
+        "tags": [
+          "Monitoring"
+        ],
+        "summary": "Verify monitor status",
+        "description": "Check if monitor exists and is active",
+        "operationId": "verifyMonitor",
+        "parameters": [
+          {
+            "name": "monitorName",
+            "in": "query",
+            "description": "Monitor name",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Production Server"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring/monitors/secureVerify": {
+      "get": {
+        "tags": [
+          "Monitoring"
+        ],
+        "summary": "Verify monitor status (secure)",
+        "description": "Check if monitor exists safely",
+        "operationId": "secureVerifyMonitor",
+        "parameters": [
+          {
+            "name": "monitorName",
+            "in": "query",
+            "description": "Monitor name",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Production Server"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring/metrics/types": {
+      "get": {
+        "tags": [
+          "Monitoring"
+        ],
+        "summary": "Get metric types",
+        "description": "List available metric types",
+        "operationId": "getMetricTypes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring/metrics/summary": {
+      "get": {
+        "tags": [
+          "Monitoring"
+        ],
+        "summary": "Get metrics summary",
+        "description": "Get current metrics overview",
+        "operationId": "getMetricsSummary",
+        "parameters": [
+          {
+            "name": "monitorId",
+            "in": "query",
+            "description": "Monitor ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring/metrics/secureHistory": {
+      "get": {
+        "tags": [
+          "Monitoring"
+        ],
+        "summary": "Get metric history (secure)",
+        "description": "Query historical metric data safely",
+        "operationId": "getSecureMetricHistory",
+        "parameters": [
+          {
+            "name": "monitorId",
+            "in": "query",
+            "description": "Monitor ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "123"
+            }
+          },
+          {
+            "name": "metricFull",
+            "in": "query",
+            "description": "Metric name",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "linux.cpu.usage"
+            }
+          },
+          {
+            "name": "history",
+            "in": "query",
+            "description": "Time range",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "6h"
+            }
+          },
+          {
+            "name": "instance",
+            "in": "query",
+            "description": "Instance filter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "server1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring/metrics/history": {
+      "get": {
+        "tags": [
+          "Monitoring"
+        ],
+        "summary": "Get metric history",
+        "description": "Query historical metric data",
+        "operationId": "getMetricHistory",
+        "parameters": [
+          {
+            "name": "monitorId",
+            "in": "query",
+            "description": "Monitor ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "123"
+            }
+          },
+          {
+            "name": "metricFull",
+            "in": "query",
+            "description": "Metric name",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "linux.cpu.usage"
+            }
+          },
+          {
+            "name": "history",
+            "in": "query",
+            "description": "Time range",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "6h"
+            }
+          },
+          {
+            "name": "instance",
+            "in": "query",
+            "description": "Instance filter",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "server1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integration/services/test": {
+      "get": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Test service connection",
+        "description": "Test connectivity to external service",
+        "operationId": "testServiceConnection",
+        "parameters": [
+          {
+            "name": "serviceUrl",
+            "in": "query",
+            "description": "Service URL",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "https://api.example.com/health"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integration/services/secureTest": {
+      "get": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Test service connection (secure)",
+        "description": "Test connectivity with validation",
+        "operationId": "secureTestServiceConnection",
+        "parameters": [
+          {
+            "name": "serviceUrl",
+            "in": "query",
+            "description": "Service URL",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "https://api.example.com/health"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integration/services/list": {
+      "get": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "List integration services",
+        "description": "Get configured integration services",
+        "operationId": "listServices",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integration/health": {
+      "get": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Integration health check",
+        "description": "Check integration service health",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/widgets": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get widget data",
+        "description": "Returns data for a specific widget",
+        "operationId": "getWidgetData",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Widget ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/summary": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get dashboard summary",
+        "description": "Returns dashboard overview data",
+        "operationId": "getSummary",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/stats": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get statistics",
+        "description": "Returns dashboard statistics",
+        "operationId": "getStats",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "24h"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/quick-stats": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get quick stats",
+        "description": "Returns quick statistics",
+        "operationId": "getQuickStats",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/activity": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get recent activity",
+        "description": "Returns recent system activity",
+        "operationId": "getActivity",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/export": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Export settings",
+        "description": "Exports all settings as JSON",
+        "operationId": "export",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/defaults": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Get defaults",
+        "description": "Returns default configuration values",
+        "operationId": "getDefaults",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/categories": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "List categories",
+        "description": "Returns configuration categories",
+        "operationId": "listCategories",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/subtract": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Subtract numbers",
+        "description": "Returns difference of two numbers",
+        "operationId": "subtract",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "description": "First number",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 10
+            }
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "description": "Second number",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/stats": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Calculate statistics",
+        "description": "Returns basic statistics for values",
+        "operationId": "stats",
+        "parameters": [
+          {
+            "name": "values",
+            "in": "query",
+            "description": "Comma-separated values",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "10,20,30,40,50"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/round": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Round number",
+        "description": "Rounds number to specified precision",
+        "operationId": "round",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "description": "Value",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 3.14159265
+            }
+          },
+          {
+            "name": "precision",
+            "in": "query",
+            "description": "Decimal places",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/percentage": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Calculate percentage",
+        "description": "Returns percentage of value",
+        "operationId": "percentage",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "description": "Value",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 200
+            }
+          },
+          {
+            "name": "percent",
+            "in": "query",
+            "description": "Percentage",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 15
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/multiply": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Multiply numbers",
+        "description": "Returns product of two numbers",
+        "operationId": "multiply",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "description": "First number",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 10
+            }
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "description": "Second number",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/divide": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Divide numbers",
+        "description": "Returns quotient of two numbers",
+        "operationId": "divide",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "description": "Dividend",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 10
+            }
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "description": "Divisor",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/convert/duration": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Convert duration",
+        "description": "Converts seconds to human readable format",
+        "operationId": "convertDuration",
+        "parameters": [
+          {
+            "name": "seconds",
+            "in": "query",
+            "description": "Seconds",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 3661
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/convert/bytes": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Convert bytes",
+        "description": "Converts bytes to human readable format",
+        "operationId": "convertBytes",
+        "parameters": [
+          {
+            "name": "bytes",
+            "in": "query",
+            "description": "Bytes",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 1073741824
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/average": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Calculate average",
+        "description": "Returns average of values",
+        "operationId": "average",
+        "parameters": [
+          {
+            "name": "values",
+            "in": "query",
+            "description": "Comma-separated values",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "10,20,30,40,50"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calc/add": {
+      "get": {
+        "tags": [
+          "Calculator"
+        ],
+        "summary": "Add numbers",
+        "description": "Returns sum of two numbers",
+        "operationId": "add",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "description": "First number",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 10
+            }
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "description": "Second number",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/users": {
+      "get": {
+        "tags": [
+          "Audit"
+        ],
+        "summary": "Get user audit history",
+        "description": "Returns audit logs for specific user",
+        "operationId": "getUserAudit",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "User ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/summary": {
+      "get": {
+        "tags": [
+          "Audit"
+        ],
+        "summary": "Get audit summary",
+        "description": "Returns audit statistics summary",
+        "operationId": "getSummary_1",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "24h"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/logs": {
+      "get": {
+        "tags": [
+          "Audit"
+        ],
+        "summary": "Get audit log detail",
+        "description": "Returns detailed audit log entry",
+        "operationId": "getLogDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Log ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Page size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "description": "Filter by action",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/actions": {
+      "get": {
+        "tags": [
+          "Audit"
+        ],
+        "summary": "List audit actions",
+        "description": "Returns available audit action types",
+        "operationId": "listActions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alerts/secureContent": {
+      "get": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Get alert definition (secure)",
+        "description": "Read alert with path validation",
+        "operationId": "getAlertSecure",
+        "parameters": [
+          {
+            "name": "alertName",
+            "in": "query",
+            "description": "Alert name",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "cpu-high"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alerts/list": {
+      "get": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "List alerts",
+        "description": "Get all alert definitions",
+        "operationId": "listAlerts",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alerts/content": {
+      "get": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Get alert definition",
+        "description": "Read alert definition file",
+        "operationId": "getAlert",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "query",
+            "description": "Alert filename",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "alert-cpu-high.yml"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {}
+}

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.controller;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.stereotype.Controller;
@@ -8,45 +8,38 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Hidden
 public class PageController {
 
-    // Serve the main index page
     @GetMapping("/")
-    public String showIndex() {
+    public String index() {
         return "index";
     }
 
-    // Serve the UI page for XSS testing
     @GetMapping("/profile/ui")
-    public String showProfileUI() {
+    public String profileUI() {
         return "user-profile-ui";
     }
 
-    // Serve the UI page for SSRF testing
     @GetMapping("/integration/ui")
-    public String showIntegrationUI() {
+    public String integrationUI() {
         return "integration-ui";
     }
 
-    // Serve the UI page for XXE testing
     @GetMapping("/notifications/ui")
-    public String showNotificationsUI() {
+    public String notificationsUI() {
         return "notifications-ui";
     }
 
-    // Serve the UI page for SQL Injection testing
     @GetMapping("/monitoring/ui")
-    public String showMonitoringUI() {
+    public String monitoringUI() {
         return "monitoring-ui";
     }
 
-    // Serve the UI page for Path Traversal testing
     @GetMapping("/alerts/ui")
-    public String showAlertsUI() {
+    public String alertsUI() {
         return "alerts-ui";
     }
 
-    // Serve the UI page for RCE testing
     @GetMapping("/reports/ui")
-    public String showReportsUI() {
+    public String reportsUI() {
         return "reports-ui";
     }
 }
