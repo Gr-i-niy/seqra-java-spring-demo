@@ -43,4 +43,10 @@ public class PageController {
     public String showAlertsUI() {
         return "alerts-ui";
     }
+
+    // Serve the UI page for RCE testing
+    @GetMapping("/reports/ui")
+    public String showReportsUI() {
+        return "reports-ui";
+    }
 }

@@ -12,7 +12,7 @@
         <p>System metrics and monitoring data visualization.</p>
 
         <div class="endpoint-section">
-            <h2>Metrics History Endpoints</h2>
+            <h2>Metrics History Endpoints (Error-based SQLi)</h2>
             <div class="endpoint-grid">
                 <div class="endpoint-card">
                     <div class="endpoint-title">
@@ -71,14 +71,57 @@
         </div>
 
         <div class="endpoint-section">
+            <h2>Monitor Verification Endpoints (Blind SQLi)</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Verify Monitor Status
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="monitor-name">Monitor Name:</label>
+                        <input type="text" id="monitor-name" placeholder="Monitor name" value="Production Server">
+                    </div>
+                    <button class="btn" onclick="verifyMonitor('/api/monitoring/monitors/verify', 'monitor-name', 'verify-result')">
+                        Verify Monitor
+                    </button>
+                    <div id="verify-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Monitor Verification
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="monitor-name-secure">Monitor Name:</label>
+                        <input type="text" id="monitor-name-secure" placeholder="Monitor name" value="Production Server">
+                    </div>
+                    <button class="btn btn-success" onclick="verifyMonitor('/api/monitoring/monitors/secureVerify', 'monitor-name-secure', 'verify-result-secure')">
+                        Verify Monitor Secure
+                    </button>
+                    <div id="verify-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
             <h2>Test Payloads</h2>
             <div class="test-payloads">
                 <div style="margin-bottom: 15px;">
-                    <strong>SQL Injection (Bypass Filter):</strong>
-                    <code>server1' OR '1'='1</code>
+                    <strong>Error-based SQLi (Union):</strong>
+                    <code id="payload-union">server1' UNION SELECT 1,username,password FROM users--</code>
                     <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
-                            onclick="fillInstancePayload(&quot;server1' OR '1'='1&quot;)">
+                            onclick="fillInstancePayloadFromElement('payload-union')">
                         Fill Instance Fields
+                    </button>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>Blind SQLi (Time-based with SLEEP):</strong>
+                    <code id="payload-blind">Production Server' AND SLEEP(3) AND '1'='1</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillMonitorPayloadFromElement('payload-blind')">
+                        Fill Monitor Fields
                     </button>
                 </div>
                 <div style="margin-top: 15px;">

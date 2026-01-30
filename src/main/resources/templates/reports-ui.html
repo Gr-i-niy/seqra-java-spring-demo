@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Generation</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Report Generation</h1>
+        <p>Network diagnostics and report generation tools.</p>
+
+        <div class="endpoint-section">
+            <h2>Network Diagnostic Endpoints</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Network Connectivity Check
+                        <span class="security-badge vulnerable">VULNERABLE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="hostname">Hostname:</label>
+                        <input type="text" id="hostname" placeholder="Enter hostname..." value="localhost">
+                    </div>
+                    <button class="btn" onclick="checkNetwork('/api/reports/network-check', 'hostname', 'network-result')">
+                        Run Network Check
+                    </button>
+                    <div id="network-result" class="result-container"></div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-title">
+                        Secure Network Check
+                        <span class="security-badge secure">SECURE</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="hostname-secure">Hostname:</label>
+                        <input type="text" id="hostname-secure" placeholder="Enter hostname..." value="localhost">
+                    </div>
+                    <button class="btn btn-success" onclick="checkNetwork('/api/reports/secure-network-check', 'hostname-secure', 'network-result-secure')">
+                        Run Secure Network Check
+                    </button>
+                    <div id="network-result-secure" class="result-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>Test Payloads</h2>
+            <div class="test-payloads">
+                <div style="margin-bottom: 15px;">
+                    <strong>Command Injection (whoami):</strong>
+                    <code id="payload-whoami">localhost; whoami</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillHostnamePayloadFromElement('payload-whoami')">
+                        Fill Hostname Fields
+                    </button>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>Command Injection (id):</strong>
+                    <code id="payload-id">localhost && id</code>
+                    <button class="btn btn-warning" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;"
+                            onclick="fillHostnamePayloadFromElement('payload-id')">
+                        Fill Hostname Fields
+                    </button>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="clearAllFields()">
+                        Clear All Fields
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+    </div>
+
+    <script src="/js/reports-ui.js"></script>
+</body>
+</html>

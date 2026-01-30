@@ -27,7 +27,24 @@ public class MonitoringController {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-            
+
+            // Register custom SLEEP function for SQLite (for blind SQLi demonstration)
+            // Matches MariaDB/MySQL syntax: SLEEP(seconds) where seconds can be decimal
+            org.sqlite.Function.create(connection, "SLEEP", new org.sqlite.Function() {
+                @Override
+                protected void xFunc() throws SQLException {
+                    double seconds = value_double(0);
+                    long millis = (long) (Math.min(seconds, 10.0) * 1000); // Cap at 10 seconds for safety
+                    try {
+                        Thread.sleep(millis);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    result(0); // MariaDB returns 0 on success
+                }
+            });
+            log.info("Registered custom SLEEP function for SQLite (MariaDB-compatible)");
+
             Statement stmt = connection.createStatement();
             
             // Create metrics table
@@ -335,6 +352,95 @@ public class MonitoringController {
         } catch (Exception e) {
             log.error("Unexpected error: {}", e.getMessage(), e);
             return instanceValuesMap;
+        }
+    }
+
+    // ============= VULNERABLE BLIND SQL INJECTION ENDPOINTS =============
+
+    /**
+     * Verifies if a monitor with given name exists and is active.
+     * VULNERABLE: Uses string concatenation allowing blind SQL injection.
+     * Attacker can use time-based techniques to extract data.
+     */
+    @GetMapping("/monitors/verify")
+    public ResponseEntity<Map<String, Object>> verifyMonitor(
+            @Parameter(description = "Monitor name to verify")
+            @RequestParam(defaultValue = "Production Server") String monitorName) {
+
+        log.info("Verifying monitor: {}", monitorName);
+
+        // VULNERABLE: Direct string concatenation allows blind SQL injection
+        // Attacker can use: Production Server' AND (SELECT CASE WHEN (1=1) THEN RANDOMBLOB(100000000) ELSE 1 END) AND '1'='1
+        // Or time-based with heavy computation to detect injection
+        String sql = "SELECT COUNT(*) FROM monitors WHERE name = '" + monitorName + "' AND status = 'active'";
+
+        log.debug("Executing verification SQL: {}", sql);
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next() && rs.getInt(1) > 0) {
+                return ResponseEntity.ok(Map.of(
+                        "verified", true,
+                        "message", "Monitor is active and verified",
+                        "monitorName", monitorName
+                ));
+            } else {
+                return ResponseEntity.ok(Map.of(
+                        "verified", false,
+                        "message", "Monitor not found or inactive",
+                        "monitorName", monitorName
+                ));
+            }
+        } catch (SQLException e) {
+            log.error("Monitor verification failed: {}", e.getMessage());
+            return ResponseEntity.ok(Map.of(
+                    "verified", false,
+                    "message", "Verification failed",
+                    "monitorName", monitorName
+            ));
+        }
+    }
+
+    /**
+     * Verifies monitor with proper SQL injection prevention.
+     * SECURE: Uses PreparedStatement with parameterized queries.
+     */
+    @GetMapping("/monitors/secureVerify")
+    public ResponseEntity<Map<String, Object>> secureVerifyMonitor(
+            @Parameter(description = "Monitor name to verify")
+            @RequestParam(defaultValue = "Production Server") String monitorName) {
+
+        log.info("Securely verifying monitor: {}", monitorName);
+
+        // SECURE: Use PreparedStatement with parameterized query
+        String sql = "SELECT COUNT(*) FROM monitors WHERE name = ? AND status = 'active'";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, monitorName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return ResponseEntity.ok(Map.of(
+                            "verified", true,
+                            "message", "Monitor is active and verified",
+                            "monitorName", monitorName
+                    ));
+                } else {
+                    return ResponseEntity.ok(Map.of(
+                            "verified", false,
+                            "message", "Monitor not found or inactive",
+                            "monitorName", monitorName
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Monitor verification failed: {}", e.getMessage());
+            return ResponseEntity.ok(Map.of(
+                    "verified", false,
+                    "message", "Verification failed",
+                    "monitorName", monitorName
+            ));
         }
     }
 
