@@ -1,0 +1,50 @@
+# CWE Scanner Configuration for ZAP
+# This file maps CWE identifiers to ZAP scanner plugin IDs
+# You can customize this to enable/disable specific scanners or add new ones
+cwe_scanners:
+  CWE-22:
+    - 6
+  CWE-78:
+    - 10048
+    - 40045
+    - 40048
+    - 90020
+    - 90037
+  CWE-79:
+    - 40012
+    - 40026
+    - 40031
+  CWE-89:
+    - 40018
+    - 40019
+    - 40020
+    - 40021
+    - 40022
+    - 40027
+  CWE-94:
+    - 40028
+    - 40032
+    - 90019
+  CWE-113:
+    - 40003
+  CWE-117:
+    - 40043
+    - 40047
+  CWE-352:
+    - 20012
+  CWE-601:
+    - 20019
+  CWE-611:
+    - 90023
+  CWE-643:
+    - 90021
+  CWE-917:
+    - 90025
+  CWE-918:
+    - 40046
+  CWE-943:
+    - 40033
+    - 90039
+  CWE-1336:
+    - 90035
+    - 90036

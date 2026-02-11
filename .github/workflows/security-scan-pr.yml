@@ -52,14 +52,14 @@ jobs:
 
       - name: Run security scan
         id: security-scan
-        uses: ./
+        uses: ./.github/actions/security-scan
         with:
           project-root: '.'
           openapi-spec: 'http://localhost:8081/v3/api-docs'
           target-url: 'http://localhost:8081'
           zap-input-vector: '31'
           zap-rpc: '5'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          cwe-config: 'cwe_scanners_example.yaml'
 
       - name: Stop application
         if: always()

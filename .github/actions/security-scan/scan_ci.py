@@ -16,14 +16,6 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
 
-def log_group(title: str):
-    print(f"::group::{title}")
-
-
-def log_endgroup():
-    print("::endgroup::")
-
-
 def log_error(message: str):
     print(f"::error::{message}")
 
@@ -36,38 +28,22 @@ def log_notice(message: str):
     print(f"::notice::{message}")
 
 
-def load_cwe_scanners(config_file: Optional[str] = None) -> Dict[str, List[int]]:
-    default_scanners = {
-        "CWE-22": [6],
-        "CWE-78": [10048, 40045, 40048, 90020, 90037],
-        "CWE-79": [40012, 40026, 40031],
-        "CWE-89": [40018, 40019, 40020, 40021, 40022, 40027],
-        "CWE-94": [40028, 40032, 90019],
-        "CWE-113": [40003],
-        "CWE-117": [40043, 40047],
-        "CWE-352": [20012],
-        "CWE-601": [20019],
-        "CWE-611": [90023],
-        "CWE-643": [90021],
-        "CWE-917": [90025],
-        "CWE-918": [40046],
-        "CWE-943": [40033, 90039],
-        "CWE-1336": [90035, 90036],
-    }
-    
-    if not config_file:
-        return default_scanners
-    
+def load_cwe_scanners(config_file: str) -> Dict[str, List[int]]:
     try:
         with open(config_file, 'r') as f:
             config = yaml.safe_load(f)
             if config and 'cwe_scanners' in config:
                 logger.info(f"Loaded CWE scanners from {config_file}")
                 return config['cwe_scanners']
+            else:
+                log_error(f"Invalid CWE scanner configuration in {config_file}")
+                raise SystemExit(1)
+    except FileNotFoundError:
+        log_error(f"CWE scanner configuration file not found: {config_file}")
+        raise SystemExit(1)
     except Exception as e:
-        log_warning(f"Failed to load CWE scanners from {config_file}: {e}. Using defaults.")
-    
-    return default_scanners
+        log_error(f"Failed to load CWE scanners from {config_file}: {e}")
+        raise SystemExit(1)
 
 INPUT_VECTORS = {"query": 1, "body": 2, "path": 4, "header": 8, "cookie": 16}
 DEFAULT_INPUT_VECTOR = 31
@@ -199,7 +175,6 @@ class ScanResults:
 
 
 def print_scan_summary(results: ScanResults) -> None:
-    log_group("Scan Summary")
     if results.seqra_duration is not None:
         logger.info(f"Seqra scan: {results.seqra_duration:.2f}s")
     logger.info(f"ZAP scan: {results.scan_duration:.2f}s")
@@ -212,15 +187,12 @@ def print_scan_summary(results: ScanResults) -> None:
         logger.info(f"Skipped: {len(results.not_scanned)}")
     if results.total_messages_sent:
         logger.info(f"Total HTTP requests: {results.total_messages_sent}")
-    log_endgroup()
     
     if results.confirmed:
-        log_group(f"Confirmed Vulnerabilities ({len(results.confirmed)})")
         for ep in results.confirmed:
             alerts = results.alerts_by_path[(ep.method, ep.path, ep.cwe)]
             msg = f"{ep.method} {ep.path} - {ep.cwe} - {ep.rule_name} ({len(alerts)} alert(s))"
             log_warning(msg)
-        log_endgroup()
     
     if results.confirmed:
         log_notice(f"Security scan found {len(results.confirmed)} confirmed vulnerabilities. Check the full report for details.")
@@ -233,7 +205,6 @@ def print_scan_summary(results: ScanResults) -> None:
 def start_zap_container(docker_image: str = "zaproxy/zap-stable", container_name: str = "zap-ci",
                         zap_port: int = 8080, zap_key: str = "", workspace: Optional[str] = None,
                         install_addons: bool = True) -> None:
-    log_group("Starting ZAP Container")
     workspace = workspace or os.getenv("GITHUB_WORKSPACE", os.getcwd())
     
     logger.info(f"Pulling Docker image: {docker_image}")
@@ -280,11 +251,9 @@ def start_zap_container(docker_image: str = "zaproxy/zap-stable", container_name
     else:
         log_error("ZAP failed to start within timeout")
         raise RuntimeError("ZAP failed to start")
-    log_endgroup()
 
 
 def stop_zap_container(container_name: str = "zap-ci") -> None:
-    log_group("Stopping ZAP Container")
     try:
         logger.info(f"Stopping container: {container_name}")
         subprocess.run(["docker", "stop", container_name], capture_output=True, check=False)
@@ -292,7 +261,6 @@ def stop_zap_container(container_name: str = "zap-ci") -> None:
         logger.info("ZAP container stopped and removed")
     except Exception as e:
         log_warning(f"Failed to stop container: {e}")
-    log_endgroup()
 
 
 class ScanScriptError(RuntimeError):
@@ -344,7 +312,12 @@ class ZapScanner:
         if openapi_source.lower().startswith("http"):
             self.zap.openapi.import_url(url=openapi_source, hostoverride=target, contextid=context_id)
         else:
-            self.zap.openapi.import_file(file=Path(openapi_source).absolute(), target=target, contextid=context_id)
+            openapi_path = Path(openapi_source).absolute()
+            workspace = Path(os.getenv("GITHUB_WORKSPACE", os.getcwd()))
+            relative_path = openapi_path.relative_to(workspace)
+            zap_path = f"/zap/wrk/{relative_path}"
+            logger.debug(f"Importing OpenAPI from container path: {zap_path}")
+            self.zap.openapi.import_file(file=zap_path, target=target, contextid=context_id)
         urls = self.zap.core.urls(baseurl=target)
         logger.debug(f"Imported {len(urls)} urls to ZAP")
         return urls
@@ -539,57 +512,20 @@ class ZapScanner:
         logger.info(f"Retrieved {total_alerts} total alerts for {len(endpoints)} endpoints")
         return alerts_by_endpoint
 
-    def setup_context(self, context_file: Optional[str] = None) -> str:
+    def setup_context(self) -> str:
         """Setup ZAP context and return context ID"""
         contexts = self.zap.context.context_list
-
-        if context_file:
-            logger.info(f"Importing context from: {context_file}")
-            self.zap.context.import_context(str(Path(context_file).resolve()))
-            contexts = self.zap.context.context_list
-            name = contexts[-1]
-            logger.info(f"Using context: {name}")
-        else:
-            name = "seqra"
-            if name in contexts:
-                self.zap.context.remove_context(name)
-            self.zap.context.new_context(name)
-            logger.info(f"Created new context: {name}")
+        name = "seqra"
+        if name in contexts:
+            self.zap.context.remove_context(name)
+        self.zap.context.new_context(name)
+        logger.info(f"Created new context: {name}")
 
         ctx_info = self.zap.context.context(name)
         if isinstance(ctx_info, str):
             ctx_info = json.loads(ctx_info)
 
         return ctx_info["id"]
-
-    def get_user(self, context_id: str, user_name: Optional[str] = None) -> Optional[str]:
-        """Get user ID from context"""
-        user_list = self.zap.users.users_list(context_id)
-        if not user_list:
-            if user_name:
-                logger.error(f"User '{user_name}' not found in context {context_id}")
-                raise ScanScriptError(f"User '{user_name}' not found in context {context_id}")
-            return None
-
-        if user_name:
-            for user in user_list:
-                if user.get("name") == user_name:
-                    return user.get("id")
-            logger.error(f"User '{user_name}' not found in context {context_id}")
-            raise ScanScriptError(f"User '{user_name}' not found in context {context_id}")
-
-        return user_list[0].get("id")
-
-    def authenticate_user(self, context_id: str, user_id: str) -> None:
-        """Authenticate user in ZAP context"""
-        logger.info(f"Authenticating user {user_id} in context {context_id}")
-        result = self.zap.users.authenticate_as_user(contextid=context_id, userid=user_id)
-        if result != "OK":
-            logger.error(f"Authentication failed: {result}")
-            logger.error("Please setup authentication and try again")
-            raise ScanScriptError(f"Authentication failed: {result}")
-        logger.info("Authentication successful")
-
 
 
 
@@ -703,24 +639,9 @@ def get_new_vulnerabilities(old_sarif: str, new_sarif: str, cwe_scanners: Dict[s
     return list(endpoints.values())
 
 
-def filter_endpoints(endpoints: List[Endpoint], 
-                     cwe_filter: Optional[List[str]] = None,
-                     path_filter: Optional[str] = None, 
-                     method_filter: Optional[List[str]] = None) -> List[Endpoint]:
-    """Apply all user filters"""
-    allowed_methods = [m.upper() for m in method_filter] if method_filter else None
-    
-    filtered = []
-    for ep in endpoints:
-        if cwe_filter and ep.cwe not in cwe_filter:
-            continue
-        if path_filter and path_filter not in ep.path:
-            continue
-        if allowed_methods and ep.method.upper() not in allowed_methods:
-            continue
-        filtered.append(ep)
-    
-    return filtered
+def filter_endpoints(endpoints: List[Endpoint]) -> List[Endpoint]:
+    """Return all endpoints (no filtering)"""
+    return endpoints
 
 
 def main():
@@ -739,14 +660,7 @@ def main():
     input_vector = int(os.getenv("INPUT_VECTOR", "31"))
     rpc = int(os.getenv("RPC", "5"))
     cwe_config = os.getenv("CWE_CONFIG")
-    context_file = os.getenv("CONTEXT_FILE")
-    user_name = os.getenv("USER_NAME")
-    path_filter = os.getenv("PATH_FILTER")
     output_file = os.getenv("OUTPUT_FILE", "reports/scan-results.json")
-    
-    # Parse comma-separated filters
-    cwe_filter = os.getenv("CWE_FILTER").split(",") if os.getenv("CWE_FILTER") else None
-    method_filter = os.getenv("METHOD_FILTER").split(",") if os.getenv("METHOD_FILTER") else None
     
     # Validate required parameters
     if not new_sarif:
@@ -757,6 +671,9 @@ def main():
         raise SystemExit(1)
     if not target_url:
         log_error("TARGET_URL environment variable is required")
+        raise SystemExit(1)
+    if not cwe_config:
+        log_error("CWE_CONFIG environment variable is required")
         raise SystemExit(1)
 
     cwe_scanners = load_cwe_scanners(cwe_config)
@@ -769,7 +686,6 @@ def main():
     try:
         start_zap_container(docker_image, container_name, zap_port, zap_key, install_addons=True)
 
-        log_group("Phase 1: Parse & Filter")
         if old_sarif:
             logger.info("Differential scanning mode enabled")
             raw_endpoints = get_new_vulnerabilities(old_sarif, new_sarif, cwe_scanners)
@@ -779,31 +695,17 @@ def main():
             raw_endpoints = parse_sarif(new_sarif, cwe_scanners)
             logger.info(f"Found {len(raw_endpoints)} endpoints from SARIF")
 
-        filtered_endpoints = filter_endpoints(raw_endpoints, cwe_filter, path_filter, method_filter)
-        if cwe_filter:
-            logger.debug(f"CWE filter: {cwe_filter}")
-        if path_filter:
-            logger.debug(f"Path filter: '{path_filter}'")
-        if method_filter:
-            logger.debug(f"Method filter: {method_filter}")
-        logger.info(f"After filtering: {len(filtered_endpoints)} endpoints")
+        filtered_endpoints = filter_endpoints(raw_endpoints)
+        logger.info(f"Processing {len(filtered_endpoints)} endpoints")
         if not filtered_endpoints:
-            log_notice("No endpoints remaining after filters")
+            log_error("No endpoints to scan")
             return
-        log_endgroup()
 
-        log_group("Phase 2: ZAP Setup")
         logger.info(f"Connecting to ZAP at {zap_url}")
         with ZapScanner(zap_url, zap_key, cwe_scanners, input_vector, rpc) as scanner:
             scanner.check_missing_scanners()
-            context_id = scanner.setup_context(context_file)
-            user_id = scanner.get_user(context_id, user_name)
-            if user_id:
-                logger.info(f"Using user ID: {user_id}")
-                scanner.authenticate_user(context_id, user_id)
-            else:
-                logger.info("No user found, scanning without auth")
-            messages_before_openapi = len(scanner.zap.core.messages(baseurl=target_url))
+            context_id = scanner.setup_context()
+            messages_before_openapi = scanner.zap.core.number_of_messages(baseurl=target_url)
             logger.debug(f"Existing messages before OpenAPI import: {messages_before_openapi}")
             logger.info("Importing OpenAPI spec to ZAP")
             zap_urls = scanner.import_openapi(openapi_spec, target_url, context_id)
@@ -814,27 +716,22 @@ def main():
                 target_url, filtered_endpoints, start=messages_before_openapi
             )
             if not scannable_endpoints:
-                log_notice("No scannable endpoints created from ZAP messages - cannot scan")
+                log_error("No scannable endpoints created from ZAP messages - cannot scan")
                 return
-            log_endgroup()
             
-            log_group("Phase 3: Active Scanning")
             logger.info(f"Starting scan of {len(scannable_endpoints)} endpoints")
             all_scan_ids, scanned_endpoints, scan_start_time = scanner.scan_endpoint(
-                scannable_endpoints, cwe_policies, context_id, user_id
+                scannable_endpoints, cwe_policies, context_id, None
             )
             scan_duration = time.time() - scan_start_time
             logger.info(f"All scans completed in {scan_duration:.2f}s")
             total_messages_sent = scanner.get_total_messages_sent()
-            log_endgroup()
             
-            log_group("Phase 4: Collecting Results")
             all_endpoints = scannable_endpoints + not_found
             alerts_by_path = scanner.get_alerts_for_endpoints(all_endpoints)
             results = ScanResults.from_endpoints(
                 all_endpoints, alerts_by_path, scanned_endpoints, scan_duration, None, total_messages_sent
             )
-            log_endgroup()
             
             results.save_to_json(output_file)
             print_scan_summary(results)

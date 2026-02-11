@@ -23,36 +23,12 @@ inputs:
     default: '5'
   cwe-config:
     description: 'Path to CWE scanner configuration YAML'
-    required: false
-  context-file:
-    description: 'ZAP context file to import'
-    required: false
-  user-name:
-    description: 'ZAP user name for authentication'
-    required: false
-  cwe-filter:
-    description: 'Filter by specific CWEs (comma-separated)'
-    required: false
-  path-filter:
-    description: 'Filter endpoints by path substring'
-    required: false
-  method-filter:
-    description: 'Filter by HTTP methods (comma-separated)'
-    required: false
-  token:
-    description: 'GitHub token for private repositories'
-    default: ${{ github.token }}
+    required: true
 
 outputs:
   results-file:
     description: 'Path to the scan results JSON file'
     value: ${{ steps.scan.outputs.results_file }}
-  new-sarif:
-    description: 'Path to the new SARIF file (PR branch)'
-    value: ${{ steps.scan-pr.outputs.sarif_path }}
-  old-sarif:
-    description: 'Path to the old SARIF file (base branch)'
-    value: ${{ steps.scan-base.outputs.sarif_path }}
 
 runs:
   using: 'composite'
@@ -97,14 +73,11 @@ runs:
         fileName: 'seqra_linux_amd64.tar.gz'
         out-file-path: 'seqra-bin'
         extract: true
-        token: ${{ inputs.token }}
 
     - name: Scan PR branch with Seqra
       id: scan-pr
       shell: bash
       run: |
-        echo "Scanning PR branch (${{ steps.branches.outputs.head }})"
-        
         seqra-bin/seqra --quiet compile \
           --verbosity info \
           --output ${{ runner.temp }}/seqra-pr-project \
@@ -131,8 +104,6 @@ runs:
       id: scan-base
       shell: bash
       run: |
-        echo "Scanning base branch (${{ steps.branches.outputs.base }})"
-        
         seqra-bin/seqra --quiet compile \
           --verbosity info \
           --output ${{ runner.temp }}/seqra-base-project \
@@ -160,15 +131,9 @@ runs:
         INPUT_VECTOR: ${{ inputs.zap-input-vector }}
         RPC: ${{ inputs.zap-rpc }}
         CWE_CONFIG: ${{ inputs.cwe-config }}
-        CONTEXT_FILE: ${{ inputs.context-file }}
-        USER_NAME: ${{ inputs.user-name }}
-        CWE_FILTER: ${{ inputs.cwe-filter }}
-        PATH_FILTER: ${{ inputs.path-filter }}
-        METHOD_FILTER: ${{ inputs.method-filter }}
         OUTPUT_FILE: ${{ runner.temp }}/scan-results.json
       run: |
-        echo "Running ZAP differential scan"
-        uv run python scan_ci.py
+        uv run python ${{ github.action_path }}/scan_ci.py
         echo "results_file=${{ runner.temp }}/scan-results.json" >> "$GITHUB_OUTPUT"
 
     - name: Upload scan results
@@ -176,13 +141,4 @@ runs:
       with:
         name: zap-scan-results
         path: ${{ runner.temp }}/scan-results.json
-        retention-days: 30
-
-    - name: Upload SARIF files
-      uses: actions/upload-artifact@v4
-      with:
-        name: sarif-reports
-        path: |
-          ${{ steps.scan-pr.outputs.sarif_path }}
-          ${{ steps.scan-base.outputs.sarif_path }}
         retention-days: 30
