@@ -1,0 +1,86 @@
+name: Security Scan on PR
+
+on:
+  pull_request
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build application
+        run: ./gradlew build -x test
+
+      - name: Start Spring Boot application
+        run: |
+          ./gradlew bootRun > app.log 2>&1 &
+          echo $! > app.pid
+          
+          # Wait for application to be ready
+          echo "Waiting for application to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8081/v3/api-docs > /dev/null; then
+              echo "Application is ready!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+          
+          if ! curl -s http://localhost:8081/v3/api-docs > /dev/null; then
+            echo "Application failed to start"
+            cat app.log
+            exit 1
+          fi
+
+      - name: Run security scan
+        id: security-scan
+        uses: ./
+        with:
+          project-root: '.'
+          openapi-spec: 'http://localhost:8081/v3/api-docs'
+          target-url: 'http://localhost:8081'
+          zap-input-vector: '31'
+          zap-rpc: '5'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -f app.pid ]; then
+            kill $(cat app.pid) || true
+            rm app.pid
+          fi
+
+      - name: Check scan results
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "${{ steps.security-scan.outputs.results-file }}" ]; then
+            confirmed=$(jq '.summary.confirmed' "${{ steps.security-scan.outputs.results-file }}")
+            echo "Security scan found $confirmed confirmed vulnerabilities"
+            
+            # Display summary but don't fail the build
+            if [ "$confirmed" -gt "0" ]; then
+              echo "::warning::Found $confirmed confirmed vulnerabilities. Review the scan results artifact for details."
+            else
+              echo "::notice::No confirmed vulnerabilities found"
+            fi
+          fi

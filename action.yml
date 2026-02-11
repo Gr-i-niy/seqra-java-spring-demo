@@ -1,0 +1,188 @@
+name: 'Seqra + ZAP PR Differential Scan'
+description: 'Security-focused differential scanning for pull requests using Seqra SAST and ZAP DAST'
+
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  project-root:
+    description: 'Relative path to the project root'
+    default: '.'
+  openapi-spec:
+    description: 'Path or URL to OpenAPI specification'
+    required: true
+  target-url:
+    description: 'Target application URL for ZAP scanning'
+    required: true
+  zap-input-vector:
+    description: 'ZAP input vector mask (default: 31 = all)'
+    default: '31'
+  zap-rpc:
+    description: 'ZAP RPC parameter'
+    default: '5'
+  cwe-config:
+    description: 'Path to CWE scanner configuration YAML'
+    required: false
+  context-file:
+    description: 'ZAP context file to import'
+    required: false
+  user-name:
+    description: 'ZAP user name for authentication'
+    required: false
+  cwe-filter:
+    description: 'Filter by specific CWEs (comma-separated)'
+    required: false
+  path-filter:
+    description: 'Filter endpoints by path substring'
+    required: false
+  method-filter:
+    description: 'Filter by HTTP methods (comma-separated)'
+    required: false
+  token:
+    description: 'GitHub token for private repositories'
+    default: ${{ github.token }}
+
+outputs:
+  results-file:
+    description: 'Path to the scan results JSON file'
+    value: ${{ steps.scan.outputs.results_file }}
+  new-sarif:
+    description: 'Path to the new SARIF file (PR branch)'
+    value: ${{ steps.scan-pr.outputs.sarif_path }}
+  old-sarif:
+    description: 'Path to the old SARIF file (base branch)'
+    value: ${{ steps.scan-base.outputs.sarif_path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Determine branches
+      id: branches
+      shell: bash
+      run: |
+        if [ -n "${{ github.event.pull_request.base.ref }}" ]; then
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+        else
+          BASE_BRANCH="main"
+        fi
+        
+        if [ -n "${{ github.event.pull_request.head.ref }}" ]; then
+          HEAD_BRANCH="${{ github.event.pull_request.head.ref }}"
+        else
+          HEAD_BRANCH="${{ github.ref_name }}"
+        fi
+        
+        echo "base=$BASE_BRANCH" >> $GITHUB_OUTPUT
+        echo "head=$HEAD_BRANCH" >> $GITHUB_OUTPUT
+        echo "Base branch: $BASE_BRANCH"
+        echo "Head branch: $HEAD_BRANCH"
+
+    - name: Setup UV
+      uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+
+    - name: Install Python dependencies
+      shell: bash
+      run: |
+        uv sync --frozen
+
+    - name: Download Seqra
+      uses: robinraju/release-downloader@v1.12
+      with:
+        repository: 'seqra/seqra'
+        tag: 'v2.3.0'
+        fileName: 'seqra_linux_amd64.tar.gz'
+        out-file-path: 'seqra-bin'
+        extract: true
+        token: ${{ inputs.token }}
+
+    - name: Scan PR branch with Seqra
+      id: scan-pr
+      shell: bash
+      run: |
+        echo "Scanning PR branch (${{ steps.branches.outputs.head }})"
+        
+        seqra-bin/seqra --quiet compile \
+          --verbosity info \
+          --output ${{ runner.temp }}/seqra-pr-project \
+          ${{ inputs.project-root }}
+        
+        seqra-bin/seqra --quiet scan \
+          --ruleset builtin \
+          --severity warning \
+          --severity error \
+          --timeout 15m \
+          --verbosity info \
+          --output ${{ runner.temp }}/pr-branch.sarif \
+          ${{ runner.temp }}/seqra-pr-project
+        
+        echo "sarif_path=${{ runner.temp }}/pr-branch.sarif" >> "$GITHUB_OUTPUT"
+
+    - name: Checkout base branch
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ steps.branches.outputs.base }}
+        path: base-branch
+
+    - name: Scan base branch with Seqra
+      id: scan-base
+      shell: bash
+      run: |
+        echo "Scanning base branch (${{ steps.branches.outputs.base }})"
+        
+        seqra-bin/seqra --quiet compile \
+          --verbosity info \
+          --output ${{ runner.temp }}/seqra-base-project \
+          base-branch/${{ inputs.project-root }}
+        
+        seqra-bin/seqra --quiet scan \
+          --ruleset builtin \
+          --severity warning \
+          --severity error \
+          --timeout 15m \
+          --verbosity info \
+          --output ${{ runner.temp }}/base-branch.sarif \
+          ${{ runner.temp }}/seqra-base-project
+        
+        echo "sarif_path=${{ runner.temp }}/base-branch.sarif" >> "$GITHUB_OUTPUT"
+
+    - name: Run ZAP differential scan
+      id: scan
+      shell: bash
+      env:
+        NEW_SARIF: ${{ steps.scan-pr.outputs.sarif_path }}
+        OLD_SARIF: ${{ steps.scan-base.outputs.sarif_path }}
+        OPENAPI_SPEC: ${{ inputs.openapi-spec }}
+        TARGET_URL: ${{ inputs.target-url }}
+        INPUT_VECTOR: ${{ inputs.zap-input-vector }}
+        RPC: ${{ inputs.zap-rpc }}
+        CWE_CONFIG: ${{ inputs.cwe-config }}
+        CONTEXT_FILE: ${{ inputs.context-file }}
+        USER_NAME: ${{ inputs.user-name }}
+        CWE_FILTER: ${{ inputs.cwe-filter }}
+        PATH_FILTER: ${{ inputs.path-filter }}
+        METHOD_FILTER: ${{ inputs.method-filter }}
+        OUTPUT_FILE: ${{ runner.temp }}/scan-results.json
+      run: |
+        echo "Running ZAP differential scan"
+        uv run python scan_ci.py
+        echo "results_file=${{ runner.temp }}/scan-results.json" >> "$GITHUB_OUTPUT"
+
+    - name: Upload scan results
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-scan-results
+        path: ${{ runner.temp }}/scan-results.json
+        retention-days: 30
+
+    - name: Upload SARIF files
+      uses: actions/upload-artifact@v4
+      with:
+        name: sarif-reports
+        path: |
+          ${{ steps.scan-pr.outputs.sarif_path }}
+          ${{ steps.scan-base.outputs.sarif_path }}
+        retention-days: 30
