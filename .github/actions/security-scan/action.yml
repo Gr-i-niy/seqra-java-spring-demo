@@ -65,34 +65,23 @@ runs:
       run: |
         uv sync --frozen
 
-    - name: Download Seqra
-      uses: robinraju/release-downloader@v1.12
-      with:
-        repository: 'seqra/seqra'
-        tag: 'v2.3.0'
-        fileName: 'seqra_linux_amd64.tar.gz'
-        out-file-path: 'seqra-bin'
-        extract: true
-
     - name: Scan PR branch with Seqra
       id: scan-pr
-      shell: bash
-      run: |
-        seqra-bin/seqra --quiet compile \
-          --verbosity info \
-          --output ${{ runner.temp }}/seqra-pr-project \
-          ${{ inputs.project-root }}
-        
-        seqra-bin/seqra --quiet scan \
-          --ruleset builtin \
-          --severity warning \
-          --severity error \
-          --timeout 15m \
-          --verbosity info \
-          --output ${{ runner.temp }}/pr-branch.sarif \
-          ${{ runner.temp }}/seqra-pr-project
-        
-        echo "sarif_path=${{ runner.temp }}/pr-branch.sarif" >> "$GITHUB_OUTPUT"
+      uses: seqra/seqra-action@v2
+      with:
+        project-root: ${{ inputs.project-root }}
+        seqra-version: 'v2.4.0'
+        severity: 'warning,error'
+        timeout: '15m'
+        verbosity: 'info'
+        artifact-name: 'pr-branch-sarif'
+        upload-sarif: 'false'
+    
+    - name: Download PR SARIF artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: 'pr-branch-sarif'
+        path: ${{ runner.temp }}/pr-sarif
 
     - name: Checkout base branch
       uses: actions/checkout@v6
@@ -102,30 +91,28 @@ runs:
 
     - name: Scan base branch with Seqra
       id: scan-base
-      shell: bash
-      run: |
-        seqra-bin/seqra --quiet compile \
-          --verbosity info \
-          --output ${{ runner.temp }}/seqra-base-project \
-          base-branch/${{ inputs.project-root }}
-        
-        seqra-bin/seqra --quiet scan \
-          --ruleset builtin \
-          --severity warning \
-          --severity error \
-          --timeout 15m \
-          --verbosity info \
-          --output ${{ runner.temp }}/base-branch.sarif \
-          ${{ runner.temp }}/seqra-base-project
-        
-        echo "sarif_path=${{ runner.temp }}/base-branch.sarif" >> "$GITHUB_OUTPUT"
+      uses: seqra/seqra-action@v2
+      with:
+        project-root: base-branch/${{ inputs.project-root }}
+        seqra-version: 'v2.4.0'
+        severity: 'warning,error'
+        timeout: '15m'
+        verbosity: 'info'
+        artifact-name: 'base-branch-sarif'
+        upload-sarif: 'false'
+    
+    - name: Download base SARIF artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: 'base-branch-sarif'
+        path: ${{ runner.temp }}/base-sarif
 
     - name: Run ZAP differential scan
       id: scan
       shell: bash
       env:
-        NEW_SARIF: ${{ steps.scan-pr.outputs.sarif_path }}
-        OLD_SARIF: ${{ steps.scan-base.outputs.sarif_path }}
+        NEW_SARIF: ${{ runner.temp }}/pr-sarif/seqra.sarif
+        OLD_SARIF: ${{ runner.temp }}/base-sarif/seqra.sarif
         OPENAPI_SPEC: ${{ inputs.openapi-spec }}
         TARGET_URL: ${{ inputs.target-url }}
         INPUT_VECTOR: ${{ inputs.zap-input-vector }}
