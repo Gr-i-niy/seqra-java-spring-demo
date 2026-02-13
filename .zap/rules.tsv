@@ -1,0 +1,119 @@
+# ZAP API Scan Rules Configuration
+
+# CWE-22: Path Traversal
+6	WARN	(Path Traversal - Active/release)
+
+# CWE-78: OS Command Injection
+10048	WARN	(Remote Code Execution - Shell Shock - Active/beta)
+40045	IGNORE	(Spring4Shell - Active/beta)
+40048	IGNORE	(Remote Code Execution - CVE-2021-44228 - Active/beta)
+90020	WARN	(Remote OS Command Injection - Active/release)
+90037	IGNORE	(Server Side Template Injection - Active/beta)
+
+# CWE-79: Cross-Site Scripting (XSS)
+40012	WARN	(Cross Site Scripting (Reflected) - Active/release)
+40026	IGNORE	(Cross Site Scripting (DOM Based) - Active/release)
+40031	IGNORE	(Cross Site Scripting (Persistent) - Active/release)
+
+# CWE-89: SQL Injection
+40018	WARN	(SQL Injection - Active/release)
+40019	WARN	(SQL Injection - MySQL - Active/beta)
+40020	WARN	(SQL Injection - Hypersonic SQL - Active/beta)
+40021	WARN	(SQL Injection - Oracle - Active/beta)
+40022	WARN	(SQL Injection - PostgreSQL - Active/beta)
+40027	IGNORE	(SQL Injection - SQLite - Active/beta)
+
+# CWE-94: Code Injection
+40028	WARN	(ELMAH Information Leak - Active/beta)
+40032	IGNORE	(.htaccess Information Leak - Active/beta)
+90019	WARN	(Server Side Code Injection - Active/release)
+
+# CWE-113: CRLF Injection
+40003	WARN	(CRLF Injection - Active/release)
+
+# CWE-117: Log Injection
+40043	IGNORE	(Log4Shell - Active/beta)
+40047	IGNORE	(CORS Header - Active/beta)
+
+# CWE-352: CSRF
+20012	WARN	(Anti CSRF Tokens Scanner - Active/beta)
+
+# CWE-601: Open Redirect
+20019	WARN	(External Redirect - Active/release)
+
+# CWE-611: XXE
+90023	WARN	(XML External Entity Attack - Active/beta)
+
+# CWE-643: XPath Injection
+90021	WARN	(XPath Injection - Active/beta)
+
+# CWE-917: Expression Language Injection
+90025	WARN	(Expression Language Injection - Active/beta)
+
+# CWE-918: SSRF
+40046	IGNORE	(SSRF - Active/beta)
+
+# CWE-943: NoSQL Injection
+40033	IGNORE	(NoSQL Injection - MongoDB - Active/beta)
+90039	IGNORE	(NoSQL Injection - Active/beta)
+
+# CWE-1336: Prototype Pollution
+90035	IGNORE	(Prototype Pollution - Active/beta)
+90036	IGNORE	(Prototype Pollution (Client Side) - Active/beta)
+
+# Additional passive scan rules to ignore
+90003	IGNORE	(Sub Resource Integrity Attribute Missing - Passive/release)
+90004	IGNORE	(Insufficient Site Isolation Against Spectre Vulnerability - Passive/release)
+
+# Disable all other active scan rules not listed above
+0	IGNORE	(Directory Browsing - Active/release)
+2	IGNORE	(Private IP Disclosure - Passive/release)
+3	IGNORE	(Session ID in URL Rewrite - Passive/release)
+7	IGNORE	(Remote File Inclusion - Active/release)
+10010	IGNORE	(Cookie No HttpOnly Flag - Passive/release)
+10011	IGNORE	(Cookie Without Secure Flag - Passive/release)
+10012	IGNORE	(Password Autocomplete in Browser - Passive/release)
+10015	IGNORE	(Incomplete or No Cache-control and Pragma HTTP Header Set - Passive/release)
+10016	IGNORE	(Web Browser XSS Protection Not Enabled - Passive/release)
+10017	IGNORE	(Cross-Domain JavaScript Source File Inclusion - Passive/release)
+10019	IGNORE	(Content-Type Header Missing - Passive/release)
+10020	IGNORE	(X-Frame-Options Header Scanner - Passive/release)
+10021	IGNORE	(X-Content-Type-Options Header Missing - Passive/release)
+10023	IGNORE	(Information Disclosure - Debug Error Messages - Passive/beta)
+10024	IGNORE	(Information Disclosure - Sensitive Informations in URL - Passive/beta)
+10025	IGNORE	(Information Disclosure - Sensitive Information in HTTP Referrer Header - Passive/beta)
+10026	IGNORE	(HTTP Parameter Override - Passive/beta)
+10027	IGNORE	(Information Disclosure - Suspicious Comments - Passive/beta)
+10032	IGNORE	(Viewstate Scanner - Passive/beta)
+10040	IGNORE	(Secure Pages Include Mixed Content - Passive/release)
+10045	IGNORE	(Source Code Disclosure - /WEB-INF folder - Active/beta)
+10095	IGNORE	(Backup File Disclosure - Active/beta)
+10105	IGNORE	(Weak Authentication Method - Passive/beta)
+10202	IGNORE	(Absence of Anti-CSRF Tokens - Passive/beta)
+20014	IGNORE	(HTTP Parameter Pollution scanner - Active/beta)
+20015	IGNORE	(Heartbleed OpenSSL Vulnerability - Active/beta)
+20016	IGNORE	(Cross-Domain Misconfiguration - Active/beta)
+20017	IGNORE	(Source Code Disclosure - CVE-2012-1823 - Active/beta)
+20018	IGNORE	(Remote Code Execution - CVE-2012-1823 - Active/beta)
+30001	IGNORE	(Buffer Overflow - Active/release)
+30002	IGNORE	(Format String Error - Active/release)
+30003	IGNORE	(Integer Overflow Error - Active/beta)
+40008	IGNORE	(Parameter Tampering - Active/release)
+40009	IGNORE	(Server Side Include - Active/release)
+40013	IGNORE	(Session Fixation - Active/beta)
+40014	IGNORE	(Cross Site Scripting (Persistent) - Active/release)
+40016	IGNORE	(Cross Site Scripting (Persistent) - Prime - Active/release)
+40017	IGNORE	(Cross Site Scripting (Persistent) - Spider - Active/release)
+40023	IGNORE	(Possible Username Enumeration - Active/beta)
+42	IGNORE	(Source Code Disclosure - SVN - Active/beta)
+50000	IGNORE	(Script Active Scan Rules - Active/release)
+50001	IGNORE	(Script Passive Scan Rules - Passive/release)
+90001	IGNORE	(Insecure JSF ViewState - Passive/beta)
+90011	IGNORE	(Charset Mismatch - Passive/beta)
+90022	IGNORE	(Application Error Disclosure - Passive/release)
+90024	IGNORE	(Generic Padding Oracle - Active/beta)
+90026	IGNORE	(SOAP Action Spoofing - Active/alpha)
+90028	IGNORE	(Insecure HTTP Method - Active/beta)
+90029	IGNORE	(SOAP XML Injection - Active/alpha)
+90030	IGNORE	(WSDL File Passive Scanner - Passive/alpha)
+90033	IGNORE	(Loosely Scoped Cookie - Passive/beta)
