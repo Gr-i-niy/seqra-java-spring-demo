@@ -27,4 +27,4 @@ jobs:
           timeout: '15m'
           verbosity: 'info'
           artifact-name: 'seqra-sarif'
-          upload-sarif: 'true'
+          upload-sarif: 'false'

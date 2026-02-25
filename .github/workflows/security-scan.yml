@@ -1,4 +1,4 @@
-name: Seqra + ZAP Scan on PR
+name: Seqra + ZAP Security Scan
 
 on:
   pull_request
@@ -11,9 +11,8 @@ permissions:
 jobs:
   security-scan:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout PR branch
+      - name: Checkout repository
         uses: actions/checkout@v6
 
       - name: Set up JDK 21
@@ -50,16 +49,15 @@ jobs:
             exit 1
           fi
 
-      - name: Run security scan
-        id: security-scan
-        uses: ./.github/actions/security-scan
+      - name: Run Seqra + ZAP security scan
+        uses: Gr-i-niy/seqra-zap-action@master
         with:
-          project-root: '.'
-          openapi-spec: 'http://localhost:8081/v3/api-docs'
-          target-url: 'http://localhost:8081'
-          zap-input-vector: '31'
-          zap-rpc: '5'
-          cwe-config: 'cwe_scanners_example.yaml'
+          mode: 'differential'
+          template: 'template.yaml'
+          target: 'http://localhost:8081'
+          artifact-name: 'seqra-zap-scan-results'
+          upload-sarif: 'true'
+          zap-cmd-options: '-addonupdate -addoninstall ascanrulesBeta -addoninstall pscanrulesBeta'
 
       - name: Stop application
         if: always()
@@ -67,20 +65,4 @@ jobs:
           if [ -f app.pid ]; then
             kill $(cat app.pid) || true
             rm app.pid
-          fi
-
-      - name: Check scan results
-        if: always()
-        shell: bash
-        run: |
-          if [ -f "${{ steps.security-scan.outputs.results-file }}" ]; then
-            confirmed=$(jq '.summary.confirmed' "${{ steps.security-scan.outputs.results-file }}")
-            echo "Security scan found $confirmed confirmed vulnerabilities"
-            
-            # Display summary but don't fail the build
-            if [ "$confirmed" -gt "0" ]; then
-              echo "::warning::Found $confirmed confirmed vulnerabilities. Review the scan results artifact for details."
-            else
-              echo "::notice::No confirmed vulnerabilities found"
-            fi
           fi
