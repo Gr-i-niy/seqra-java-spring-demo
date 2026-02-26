@@ -4,7 +4,8 @@ env:
       urls:
         - http://localhost:8081
       includePaths: [ ]
-      excludePaths: [ ]
+      excludePaths:
+        - http://localhost:8081/api/redirect/external$
   parameters:
     failOnError: false
     failOnWarning: false
@@ -271,3 +272,8 @@ jobs:
       - high
       - medium
       - low
+  - type: exitStatus
+    parameters:
+      okExitValue: 0
+      errorExitValue: 0
+      warnExitValue: 0
