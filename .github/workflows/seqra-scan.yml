@@ -22,9 +22,9 @@ jobs:
         uses: seqra/seqra-action@v2
         with:
           project-root: '.'
-          seqra-version: 'v2.4.0'
+          seqra-version: 'v2'
           severity: 'warning,error'
           timeout: '15m'
-          verbosity: 'info'
+          verbosity: 'debug'
           artifact-name: 'seqra-sarif'
           upload-sarif: 'false'
