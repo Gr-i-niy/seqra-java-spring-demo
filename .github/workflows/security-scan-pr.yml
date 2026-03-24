@@ -50,7 +50,7 @@ jobs:
           fi
 
       - name: Run Seqra + ZAP security scan
-        uses: Gr-i-niy/seqra-zap-action@master
+        uses: seqra/opentaint/github/zap@v0
         with:
           mode: 'differential'
           template: 'template.yaml'
