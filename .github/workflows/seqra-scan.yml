@@ -1,0 +1,30 @@
+name: Seqra Scan
+
+on:
+  pull_request
+
+jobs:
+  seqra-scan:
+    runs-on: ubuntu-latest
+    name: Run Seqra Analysis
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Run Seqra scan
+        uses: seqra/seqra-action@v2
+        with:
+          project-root: '.'
+          seqra-version: 'v2'
+          severity: 'warning,error'
+          timeout: '15m'
+          verbosity: 'debug'
+          artifact-name: 'seqra-sarif'
+          upload-sarif: 'false'

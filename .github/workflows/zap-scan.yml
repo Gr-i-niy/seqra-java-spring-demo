@@ -1,0 +1,78 @@
+name: ZAP Full Scan
+
+on:
+  pull_request
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Build application
+        run: ./gradlew build -x test
+
+      - name: Start Spring Boot application
+        run: |
+          ./gradlew bootRun > app.log 2>&1 &
+          echo $! > app.pid
+          
+          echo "Waiting for application to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8081/v3/api-docs > /dev/null; then
+              echo "Application is ready!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+          
+          if ! curl -s http://localhost:8081/v3/api-docs > /dev/null; then
+            echo "Application failed to start"
+            cat app.log
+            exit 1
+          fi
+
+      - name: Create output directory
+        run: |
+          mkdir -p zap-output
+          chmod 777 zap-output
+
+      - name: Run ZAP Automation Framework scan
+        uses: zaproxy/action-af@v0.2.0
+        continue-on-error: true
+        with:
+          plan: 'full-scan.yaml'
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          cmd_options: '-addonupdate -addoninstall ascanrulesBeta -addoninstall pscanrulesBeta'
+
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -f app.pid ]; then
+            kill $(cat app.pid) || true
+            rm app.pid
+          fi
+
+      - name: Upload ZAP scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-full-scan-results
+          path: zap-output/
+          retention-days: 30
